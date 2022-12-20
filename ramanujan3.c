@@ -14,6 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef DEBUG
+#define DEBUG_PRINT(x) printf x
+#else
+#define DEBUG_PRINT(x)                                                         \
+  do {                                                                         \
+  } while (0)
+#endif
+
 struct entry {
   long value;
   long count;
@@ -118,9 +126,9 @@ int main(int argc, char **argv) {
 
   setlocale(LC_NUMERIC, "");
 
-  long stride = (long)5.0E9;
+  long stride = (long)3.0E9;
 
-  table_size = 262144; // size_table(stride) >> 4;
+  table_size = 131072;
   struct set s = init_set(table_size);
 
   for (i = 0; i <= n; i += stride) {
@@ -128,17 +136,23 @@ int main(int argc, char **argv) {
     long k = (long)ceil(cbrt(to));
     long kmin = (long)(floor(cbrt(i)) * 0.5);
 
+#ifdef DEBUG
+    long start_iterations = total_iterations;
+#endif
+
     long min_j = 1;
     for (; k >= kmin; k--) {
       char found_valid = 0;
       for (j = min_j; cube(k) + cube(j) <= to && j < k; j++) {
         total_iterations++;
         long sum = cube(k) + cube(j);
+
         if (i <= sum && sum < to) {
           if (!found_valid) {
             found_valid = 1;
             min_j = j;
           }
+
           if (add(&s, sum) == 2) {
             count++;
             checksum += sum;
@@ -152,14 +166,17 @@ int main(int argc, char **argv) {
     }
 
     segments++;
+
+    DEBUG_PRINT(("segment %'4ld: iterations = %'6ld\n", segments,
+                 total_iterations - start_iterations));
   }
 
-  printf("%'ld Ramanujan numbers up to %'ld, check sum=%'ld\n\n"
-         "occupation = %'15ld\n"
-         "      size = %'15ld\n"
-         "      sums = %'15ld\n"
-         "  segments = %'15ld\n"
-         "  set_size = %'15ld B\n", // table size in bytes
+  printf("  %'ld Ramanujan numbers up to %'ld, check sum=%'ld\n\n"
+         "  occupation = %'15ld\n"
+         "        size = %'15ld\n"
+         "        sums = %'15ld\n"
+         "    segments = %'15ld\n"
+         "    set_size = %'15ld B\n", // table size in bytes
          count, n, checksum, s.pages_used, table_size, total_iterations,
          segments, set_size(&s));
 

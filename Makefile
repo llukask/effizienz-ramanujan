@@ -1,6 +1,6 @@
 #Memory in KB
 MEMORY = 102400000
-N = 100000000000
+N = 1000000000000
 RAMA = out/ramanujan
 CC = clang
 CFLAGS = -O3 -Wall
