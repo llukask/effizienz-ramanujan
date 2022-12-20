@@ -1,0 +1,15 @@
+#! /bin/sh
+
+if [ -z "$1" ]
+then
+  bins="ramasort ramanujan ramanujan_arrset"
+else
+  bins=$@
+fi
+
+echo "benching $bins"
+
+for t in $bins
+do
+  make bench RAMA="out/$t"
+done
