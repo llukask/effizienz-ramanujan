@@ -14,6 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define STRIDE (long)3.0E8
+#define TABLE_SIZE 16384 
+
 #ifdef DEBUG
 #define DEBUG_PRINT(x) printf x
 #else
@@ -36,60 +39,60 @@ struct vec {
 struct set {
   size_t size;
   size_t mask;
-  size_t pages_used;
+  size_t buckets_used;
   size_t total_capacity;
-  struct vec *pages;
+  struct vec *buckets;
 };
 
-struct vec *lookup_page(struct set *s, long value) {
-  size_t page_idx = (value * 31) & s->mask;
-  return &s->pages[page_idx];
+struct vec *lookup_bucket(struct set *s, long value) {
+  size_t bucket_idx = (value * 31) & s->mask;
+  return &s->buckets[bucket_idx];
 }
 
 long add(struct set *s, long value) {
-  struct vec *page = lookup_page(s, value);
+  struct vec *bucket = lookup_bucket(s, value);
 
   int i;
-  for (i = 0; i < page->size; i++) {
-    if (page->entries[i].value == value) {
-      return ++page->entries[i].count;
+  for (i = 0; i < bucket->size; i++) {
+    if (bucket->entries[i].value == value) {
+      return ++bucket->entries[i].count;
     }
   }
 
-  if (i >= page->capacity) {
-    size_t new_cap = 2 * page->capacity;
-    if (page->capacity == 0) {
-      s->pages_used++;
+  if (i >= bucket->capacity) {
+    size_t new_cap = 2 * bucket->capacity;
+    if (bucket->capacity == 0) {
+      s->buckets_used++;
       new_cap = 1;
     }
 
-    s->total_capacity += (new_cap - page->capacity);
+    s->total_capacity += (new_cap - bucket->capacity);
 
-    page->entries = realloc(page->entries, new_cap * sizeof(struct entry));
+    bucket->entries = realloc(bucket->entries, new_cap * sizeof(struct entry));
 
-    page->capacity = new_cap;
+    bucket->capacity = new_cap;
   }
 
-  page->size++;
-  page->entries[i].count = 1;
-  page->entries[i].value = value;
+  bucket->size++;
+  bucket->entries[i].count = 1;
+  bucket->entries[i].value = value;
   return 1;
 }
 
-struct set init_set(size_t pages) {
+struct set init_set(size_t buckets) {
   struct set s;
-  s.size = pages;
-  s.mask = pages - 1;
-  s.pages_used = 0;
+  s.size = buckets;
+  s.mask = buckets - 1;
+  s.buckets_used = 0;
   s.total_capacity = 0;
 
-  s.pages = calloc(pages, sizeof(struct vec));
+  s.buckets = calloc(buckets, sizeof(struct vec));
 
   return s;
 }
 
 size_t set_size(struct set *s) {
-  size_t size = sizeof(struct set);
+  size_t size = 0;
   size += s->size * sizeof(struct vec);
   size += s->total_capacity * sizeof(struct entry);
 
@@ -113,7 +116,6 @@ int main(int argc, char **argv) {
   char *endptr;
   long i, j;
   long count = 0;
-  size_t table_size;
   long checksum = 0;
   long total_iterations = 0;
   long segments = 0;
@@ -126,9 +128,9 @@ int main(int argc, char **argv) {
 
   setlocale(LC_NUMERIC, "");
 
-  long stride = (long)3.0E9;
+  size_t table_size = TABLE_SIZE;
+  long stride = (long)STRIDE;
 
-  table_size = 131072;
   struct set s = init_set(table_size);
 
   for (i = 0; i <= n; i += stride) {
@@ -162,7 +164,7 @@ int main(int argc, char **argv) {
     }
 
     for (int p = 0; p < s.size; p++) {
-      s.pages[p].size = 0;
+      s.buckets[p].size = 0;
     }
 
     segments++;
@@ -177,7 +179,7 @@ int main(int argc, char **argv) {
          "        sums = %'15ld\n"
          "    segments = %'15ld\n"
          "    set_size = %'15ld B\n", // table size in bytes
-         count, n, checksum, s.pages_used, table_size, total_iterations,
+         count, n, checksum, s.buckets_used, table_size, total_iterations,
          segments, set_size(&s));
 
   return 0;
