@@ -1,11 +1,11 @@
 #Memory in KB
-MEMORY = 102400000
+MEMORY = 100000
 N = 1000000000000
 RAMA = out/ramanujan
 CC = clang
 CFLAGS = -O3 -Wall
-PERFFLAGS = -e cycles -e instructions -e branch-misses -e LLC-load-misses -e LLC-store-misses
-# PERFFLAGS = -e cpu_core/cycles/ -e cpu_core/instructions/ -e cpu_core/branch-misses/ -e cpu_core/LLC-load-misses/ -e cpu_core/LLC-store-misses/
+# PERFFLAGS = -e cycles -e instructions -e branch-misses -e LLC-load-misses -e LLC-store-misses
+PERFFLAGS = -e cpu_core/cycles/ -e cpu_core/instructions/ -e cpu_core/branch-misses/ -e cpu_core/LLC-load-misses/ -e cpu_core/LLC-store-misses/
 
 SOURCES = ramasort.c ramanujan.c Makefile
 
