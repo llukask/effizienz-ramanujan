@@ -1,33 +1,23 @@
 #Memory in KB
-MEMORY = 100000
-N = 1000000000000
-RAMA = out/ramanujan
-CC = clang
+MEMORY = 102400
+N = 10000000000000
+RAMA = ramasort
+CC = gcc
 CFLAGS = -O3 -Wall
-# PERFFLAGS = -e cycles -e instructions -e branch-misses -e LLC-load-misses -e LLC-store-misses
-PERFFLAGS = -e cpu_core/cycles/ -e cpu_core/instructions/ -e cpu_core/branch-misses/ -e cpu_core/LLC-load-misses/ -e cpu_core/LLC-store-misses/
 
 SOURCES = ramasort.c ramanujan.c Makefile
 
-.PHONY: bench dist
-
 bench: $(RAMA)
-	taskset 255 perf stat $(PERFFLAGS) ./$(RAMA) $(N)
-
-out:
-	mkdir out/
+	ulimit -S -v $(MEMORY); perf stat -e cycles -e instructions -e branch-misses -e LLC-load-misses -e LLC-store-misses ./$(RAMA) $(N)
 
 clean:
-	rm -rd out
+	rm ramasort ramanujan
 
-out/ramanujan: ramanujan.c out
-	$(CC) $(CFLAGS) $< -lm -o $@
+ramanujan: ramanujan.c
+	$(CC) $(CFLAGS) ramanujan6.c -lm -o ramanujan
 
-out/ramasort: ramasort.c out
-	$(CC) $(CFLAGS) $< -lm -o $@
-
-out/ramanujan%: ramanujan%.c out
-	$(CC) $(CFLAGS) $< -lm -o $@
+ramasort: ramasort.c
+	$(CC) $(CFLAGS) ramasort2.c -lm -o ramasort
 
 dist: ../ramanujan.tar.gz
 

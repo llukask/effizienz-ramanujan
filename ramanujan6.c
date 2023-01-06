@@ -14,8 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define STRIDE (long)(0.6E9)
-#define TABLE_SIZE (long)(32768)
+#define STRIDE (long)(0.4E9)
+#define TABLE_SIZE (long)(16384)
 
 #ifdef DEBUG
 #define DEBUG_PRINT(x) printf x

@@ -1,0 +1,71 @@
+STRIDE = 0.6e^9
+SIZE = 32768
+
+       10394355754      cycles                                                      
+       18618078268      instructions              #    1.79  insn per cycle         
+         119082131      branch-misses                                               
+             38816      LLC-load-misses                                             
+            235377      LLC-store-misses                                            
+
+       2.217878547 seconds time elapsed
+
+       2.213891000 seconds user
+       0.004003000 seconds sys
+
+STRIDE = 1.0e^9
+SIZE = 32768
+
+       11247324625      cycles                                                      
+       17226923979      instructions              #    1.53  insn per cycle         
+         148364753      branch-misses                                               
+            491401      LLC-load-misses                                             
+           1273194      LLC-store-misses                                            
+
+       2.399924508 seconds time elapsed
+
+       2.391385000 seconds user
+       0.007997000 seconds sys
+
+STRIDE = 1.0e^9
+SIZE = 655360
+
+       10307967632      cycles                                                      
+       18060354952      instructions              #    1.75  insn per cycle         
+          96323303      branch-misses                                               
+            127977      LLC-load-misses                                             
+           1494145      LLC-store-misses                                            
+
+       2.200731359 seconds time elapsed
+
+       2.192727000 seconds user
+       0.008002000 seconds sys
+
+STRIDE = 0.6^9
+SIZE = 655360
+
+       10334529547      cycles                                                      
+       20516816872      instructions              #    1.99  insn per cycle         
+          76740623      branch-misses                                               
+             55197      LLC-load-misses                                             
+            733991      LLC-store-misses                                            
+
+       2.206194439 seconds time elapsed
+
+       2.198195000 seconds user
+       0.008007000 seconds sys
+       
+STRIDE = 0.6^9
+SIZE = 16384
+
+       11724354630      cycles                                                      
+       18073216737      instructions              #    1.54  insn per cycle         
+         175275199      branch-misses                                               
+             27288      LLC-load-misses                                             
+            156970      LLC-store-misses                                            
+
+       2.499126950 seconds time elapsed
+
+       2.495099000 seconds user
+       0.003998000 seconds sys
+
+
